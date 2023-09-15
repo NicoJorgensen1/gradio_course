@@ -1,0 +1,58 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.234.0/containers/docker-existing-dockerfile
+{
+	"name": "Existing Dockerfile",
+
+	// Sets the run context .
+	"context": "..",
+
+	// // Update the 'dockerFile' property if you aren't using the standard 'Dockerfile' filename.
+	"dockerFile": "Dockerfile",
+
+	// Add a volume to the docker container that can be reached from within the container when running through vscode 
+	// I have no idea what the bind type or the consistency means. But spaces are NOT allowed between the keywords 
+	// The username is also specified in the Dockerfile. If changed, make sure it is changed both places!
+	// By using this localEnv it is possible to use the same path on both the local computer and the server, just remember to add export IMAGE_DATASET=/path/to/dataset in the corresponding ~/.bashrc file!
+	  "mounts": [
+        "source=${localEnv:IMAGE_DATASETS},target=/Image_Datasets,type=bind,consistency=cached"
+	  ],
+	
+	// Add the IDs of extensions you want installed when the container is created.
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",									// Python extension
+				"genieai.chatgpt-vscode",							// ChatGPT extension 
+				"ms-azuretools.vscode-docker",						// docker extension
+				"yy0931.save-as-root",								// Capability of "save as root", which might be usefull when editing source code for debugging purposes
+				"ms-vscode.cpptools-extension-pack",				// C++ extension, used for onnx conversion 
+				"eamodio.gitlens",									// GitLens extension ID used for GitLens, which is git on steroids 
+				"HuggingFace.huggingface-vscode",					// HuggingFace StarCoder 
+				"ms-toolsai.jupyter"								// Jupyter extension
+			],
+			"settings": [
+				"terminal.integrated.shell.linux", "/bin/bash"		// Let bash be the default shell inside the container 
+			]
+		}
+	},
+    
+	// The arguments to initiate the container with.
+	"runArgs": [
+		"-v", "/tmp/.X11-unix:/tmp/.X11-unix", "-e", "DISPLAY",     // Mount the display in the container (i.e. enable usage of the screen monitors from inside the container) 
+        "--privileged",                                             // This is necessary in order for the container to be able to reach the inserted USB accelerator 
+		"-v", "/dev/bus/usb:/dev/bus/usb",							// Providing access to the usb interface 
+        "--gpus", "all",                                            // All GPUs available on the host machine will also be made available for the container 
+		"-p", "6006:6006",											// Accessing the port on which the Tensorboard app will be hosted 
+        "--network", "host"                                         // Use the same network as the host 
+	  ],
+	
+	// Assure we will always start in the /home/nico/gradio_course directory 
+	"workspaceMount": "source=${localWorkspaceFolder}/,target=/home/nico/gradio_course,type=bind,consistency=cached",
+	"workspaceFolder": "/home/nico/gradio_course",
+
+    // Uncomment to connect as a non-root user if you've added one. See https://aka.ms/vscode-remote/containers/non-root.
+	"remoteUser": "nico",
+	"remoteEnv": {
+		"IMAGE_DATASETS": "/Image_Datasets"
+	} 
+}

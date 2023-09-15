@@ -1,0 +1,15 @@
+pytorch-lightning
+transformers
+transformers[agents]
+transformers[torch]
+openai
+fiftyone
+timm
+datasets
+evaluate
+python-dotenv
+torchsummary
+tqdm
+tiktoken
+python-dotenv
+gradio
